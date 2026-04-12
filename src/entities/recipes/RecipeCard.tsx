@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { LikeHeartControl } from '../../shared/ui/feedback/LikeHeartControl'
 import type { RecipeSummary } from '../../features/recipes/model/types/recipes.model'
 import { MissingIngredientsChips } from './MissingIngredientsChips'
@@ -8,9 +9,10 @@ interface RecipeCardProps {
   liked: boolean
   isUpdatingLike: boolean
   onToggleLike: () => void | Promise<void>
+  detailHref: string
 }
 
-export function RecipeCard({ recipe, liked, isUpdatingLike, onToggleLike }: RecipeCardProps) {
+export function RecipeCard({ recipe, liked, isUpdatingLike, onToggleLike, detailHref }: RecipeCardProps) {
   const missingRequirements = recipe.ingredients.filter((ingredient) => !ingredient.inStock)
   const inStockRequirements = recipe.ingredients.filter((ingredient) => ingredient.inStock)
   const hasMissingIngredients = missingRequirements.length > 0 || recipe.availability === 'almost'
@@ -21,7 +23,12 @@ export function RecipeCard({ recipe, liked, isUpdatingLike, onToggleLike }: Reci
   return (
     <article className={`rounded-box border p-4 ${cardClassName}`}>
       <div className="mb-2 flex items-start justify-between gap-3">
-        <h3 className="line-clamp-2 text-base font-semibold text-base-content">{recipe.name}</h3>
+        <div className="space-y-1">
+          <Link to={detailHref} className="link-hover link line-clamp-2 text-base font-semibold text-base-content">
+            {recipe.name}
+          </Link>
+          <p className="text-xs text-base-content/70">Ver detalle de la receta</p>
+        </div>
         <div className="flex items-center">
           <p className="text-xs text-base-content/70">{recipe.authorName}</p>
           <LikeHeartControl
@@ -43,6 +50,12 @@ export function RecipeCard({ recipe, liked, isUpdatingLike, onToggleLike }: Reci
       />
 
       <MissingIngredientsChips recipeId={recipe.id} requirements={missingRequirements} />
+
+      <div className="mt-4">
+        <Link to={detailHref} className="btn btn-sm btn-outline">
+          Ver detalle
+        </Link>
+      </div>
     </article>
   )
 }

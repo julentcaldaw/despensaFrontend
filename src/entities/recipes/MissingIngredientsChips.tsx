@@ -1,3 +1,4 @@
+import { ClipboardList } from 'lucide-react'
 import type { RecipeRequirement } from '../../features/recipes/model/types/recipes.model'
 
 interface MissingIngredientsChipsProps {
@@ -23,8 +24,9 @@ export function MissingIngredientsChips({ recipeId, requirements }: MissingIngre
       {requirements.map((requirement) => (
         <span
           key={`${recipeId}-${requirement.ingredientId}`}
-          className="badge badge-error badge-outline badge-sm"
+          className={`badge badge-outline badge-sm gap-1 ${requirement.inShoppingList ? 'badge-warning' : 'badge-error'}`}
         >
+          {requirement.inShoppingList ? <ClipboardList size={12} aria-hidden="true" /> : null}
           {formatRequirement(requirement)}
         </span>
       ))}
