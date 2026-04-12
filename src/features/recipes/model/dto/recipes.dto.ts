@@ -23,20 +23,29 @@ export interface RecipeRequirementDTO {
   quantity: number | null
   unit: string | null
   inStock: boolean
+  inShoppingList?: boolean
   ingredient: RecipeIngredientDTO
 }
 
 export interface RecipeSummaryDTO {
   id: number
   name: string
+  detail?: string | null
+  image?: string | null
   difficulty: RecipeDifficultyDTO
   prepTime: number | null
+  authorId?: number | null
   createdAt: string
   updatedAt: string
-  like: boolean
+  liked?: boolean
+  like?: boolean
   author: RecipeAuthorDTO | null
-  ingredientsCount: number
+  ingredientsCount?: number
   ingredients: RecipeRequirementDTO[]
+}
+
+export type RecipeDetailDTO = RecipeSummaryDTO & {
+  recipeIngredients?: RecipeRequirementDTO[]
 }
 
 export interface RecipesCookableBucketDTO {
@@ -52,4 +61,29 @@ export interface RecipesCookableDataDTO {
 export interface RecipesCookableResponseDTO {
   ok: boolean
   data: RecipesCookableDataDTO
+}
+
+export interface RecipeDetailResponseDTO {
+  ok: boolean
+  data: RecipeDetailDTO
+}
+
+export interface CreateRecipeIngredientRequestDTO {
+  ingredientId: number
+  quantity: number
+  unit: string
+}
+
+export interface CreateRecipeRequestDTO {
+  name: string
+  detail: string
+  image?: string
+  difficulty: RecipeDifficultyDTO
+  prepTime: number
+  ingredients: CreateRecipeIngredientRequestDTO[]
+}
+
+export interface CreateRecipeResponseDTO {
+  ok: boolean
+  data: RecipeDetailDTO
 }

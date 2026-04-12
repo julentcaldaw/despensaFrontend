@@ -7,6 +7,7 @@ export const queryKeys = {
   recipes: {
     all: ['recipes'] as const,
     cookable: () => [...queryKeys.recipes.all, 'cookable'] as const,
+    detail: (recipeId: number) => [...queryKeys.recipes.all, 'detail', recipeId] as const,
   },
   pantry: {
     all: ['pantry'] as const,

@@ -7,15 +7,18 @@ export interface RecipeRequirement {
   quantity: number | null
   unit: string | null
   inStock: boolean
+  inShoppingList: boolean
 }
 
 export interface RecipeSummary {
   id: number
   name: string
+  detail: string | null
+  image: string | null
   availability: RecipeAvailability
   difficulty: RecipeDifficulty
   prepTime: number | null
-  like: boolean
+  liked: boolean
   authorName: string
   authorAvatar: string | null
   ingredientsCount: number

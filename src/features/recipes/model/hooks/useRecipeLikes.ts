@@ -11,7 +11,7 @@ export function useRecipeLikes() {
       return likeOverrides[recipe.id]
     }
 
-    return recipe.like
+    return recipe.liked
   }
 
   async function toggleRecipeLike(recipe: RecipeSummary): Promise<void> {
