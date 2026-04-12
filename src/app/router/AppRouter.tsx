@@ -4,6 +4,8 @@ import { LoginPage } from '../../pages/auth/LoginPage'
 import { RegisterPage } from '../../pages/auth/RegisterPage'
 import { NotFoundPage } from '../../pages/not-found/NotFoundPage'
 import { PantryPage } from '../../pages/pantry/PantryPage'
+import { CreateRecipePage } from '../../pages/recipes/CreateRecipePage'
+import { RecipeDetailPage } from '../../pages/recipes/RecipeDetailPage'
 import { RecipesPage } from '../../pages/recipes/RecipesPage'
 import { ShoppingListPage } from '../../pages/shopping-list/ShoppingListPage'
 import { ProtectedRoute } from './ProtectedRoute'
@@ -53,6 +55,22 @@ export function AppRouter() {
           element={
             <ProtectedRoute>
               <RecipesPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/recipes/new"
+          element={
+            <ProtectedRoute>
+              <CreateRecipePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/recipes/:recipeId"
+          element={
+            <ProtectedRoute>
+              <RecipeDetailPage />
             </ProtectedRoute>
           }
         />

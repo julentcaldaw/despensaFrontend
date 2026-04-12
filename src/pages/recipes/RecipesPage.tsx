@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom'
+import { Plus } from 'lucide-react'
 import { useRecipes } from '../../features/recipes/model/hooks/useRecipes'
 import { useRecipeLikes } from '../../features/recipes/model/hooks/useRecipeLikes'
 import { RecipeCard } from '../../entities/recipes/RecipeCard'
@@ -19,7 +21,12 @@ export function RecipesPage() {
     <div className="p-4 sm:p-6">
       <div className="mx-auto max-w-6xl space-y-6">
         <header className="rounded-box border border-base-300 bg-base-100 p-6">
-          <h1 className="text-2xl font-semibold text-base-content">Recetas</h1>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h1 className="text-2xl font-semibold text-base-content">Recetas</h1>
+            <Link to="/recipes/new" className="btn btn-primary btn-sm">
+              <Plus size={16} /> Crear receta
+            </Link>
+          </div>
         </header>
 
         {error ? <PageErrorState error={error} title="Error al cargar recetas" /> : null}
@@ -44,6 +51,7 @@ export function RecipesPage() {
                   liked={getRecipeLikeValue(recipe)}
                   isUpdatingLike={updatingLikeId === recipe.id}
                   onToggleLike={() => toggleRecipeLike(recipe)}
+                  detailHref={`/recipes/${recipe.id}`}
                 />
               ))}
             </div>
