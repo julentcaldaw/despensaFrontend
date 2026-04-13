@@ -49,6 +49,8 @@ export function RecipeDetailPage() {
   const { data: recipe, isLoading, error } = useRecipeDetail(parsedRecipeId)
   const { updatingLikeId, getRecipeLikeValue, toggleRecipeLike } = useRecipeLikes()
   const [failedImageUrl, setFailedImageUrl] = useState<string | null>(null)
+  const [addedIngredientIds, setAddedIngredientIds] = useState<number[]>([])
+  const [addingIngredientIds, setAddingIngredientIds] = useState<number[]>([])
   const [toast, setToast] = useState<{ type: 'success' | 'warning'; message: string } | null>(null)
 
   const addMissingIngredientsMutation = useMutation({
@@ -57,16 +59,29 @@ export function RecipeDetailPage() {
         requirements.map((requirement) => createShoppingItem(mapRequirementToShoppingItemInput(requirement))),
       )
 
+      const createdIds = requirements
+        .filter((_, index) => results[index]?.status === 'fulfilled')
+        .map((requirement) => requirement.ingredientId)
+
       const createdCount = results.filter((result) => result.status === 'fulfilled').length
 
       if (createdCount === 0) {
         throw new Error('No se pudieron añadir ingredientes a la lista de la compra')
       }
 
-      return { createdCount, total: requirements.length }
+      return { createdCount, createdIds, total: requirements.length }
     },
-    onSuccess: async ({ createdCount, total }) => {
+    onSuccess: async ({ createdCount, createdIds, total }) => {
       await queryClient.invalidateQueries({ queryKey: queryKeys.shoppingList.items() })
+      setAddedIngredientIds((prev) => Array.from(new Set([...prev, ...createdIds])))
+
+      if (total === 1) {
+        setToast({
+          type: 'success',
+          message: 'Ingrediente añadido a la lista de la compra.',
+        })
+        return
+      }
 
       if (createdCount === total) {
         setToast({
@@ -110,10 +125,29 @@ export function RecipeDetailPage() {
     )
   }
 
-  const missingRequirements = recipe.ingredients.filter((ingredient) => !ingredient.inStock)
+  const ingredientsWithShoppingState = recipe.ingredients.map((ingredient) => ({
+    ...ingredient,
+    inShoppingList: ingredient.inShoppingList || addedIngredientIds.includes(ingredient.ingredientId),
+  }))
+
+  const missingRequirements = ingredientsWithShoppingState.filter((ingredient) => !ingredient.inStock)
   const addableMissingRequirements = missingRequirements.filter((ingredient) => !ingredient.inShoppingList)
-  const availableRequirements = recipe.ingredients.filter((ingredient) => ingredient.inStock)
+  const availableRequirements = ingredientsWithShoppingState.filter((ingredient) => ingredient.inStock)
   const hasMissingIngredients = missingRequirements.length > 0 || recipe.availability === 'almost'
+
+  async function handleAddSingleIngredientToShoppingList(requirement: RecipeRequirement): Promise<void> {
+    if (requirement.inStock || requirement.inShoppingList || addingIngredientIds.includes(requirement.ingredientId)) {
+      return
+    }
+
+    setAddingIngredientIds((prev) => [...prev, requirement.ingredientId])
+
+    try {
+      await addMissingIngredientsMutation.mutateAsync([requirement])
+    } finally {
+      setAddingIngredientIds((prev) => prev.filter((item) => item !== requirement.ingredientId))
+    }
+  }
 
   return (
     <div className="px-4 pb-4 pt-2 sm:px-6 sm:pb-6 sm:pt-3">
@@ -132,10 +166,11 @@ export function RecipeDetailPage() {
         <section className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr] lg:items-stretch">
           <RecipeDetailIngredientsSection recipe={recipe} />
           <RecipeDetailSidebar
-            recipeId={recipe.id}
             missingRequirements={missingRequirements}
+            addingIngredientIds={addingIngredientIds}
             addableMissingCount={addableMissingRequirements.length}
             isAddingMissingToShoppingList={addMissingIngredientsMutation.isPending}
+            onAddIngredientToShoppingList={handleAddSingleIngredientToShoppingList}
             onAddMissingToShoppingList={async () => {
               if (addableMissingRequirements.length === 0 || addMissingIngredientsMutation.isPending) {
                 return
