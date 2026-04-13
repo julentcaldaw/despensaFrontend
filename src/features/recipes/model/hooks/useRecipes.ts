@@ -1,20 +1,26 @@
 import { useQuery } from '@tanstack/react-query'
-import { fetchCookableRecipes } from '../../api/recipes.api'
-import { mapCookableRecipesResponse } from '../mappers/recipes.mapper'
-import type { RecipesCookableData } from '../types/recipes.model'
+import { fetchRecipesOverview } from '../../api/recipes.api'
+import { mapRecipesOverviewResponse } from '../mappers/recipes.mapper'
+import type { RecipesOverviewData } from '../types/recipes.model'
 import { queryKeys } from '../../../../shared/lib/query/query-keys'
 
-export function useRecipes() {
-  const { data, isLoading, error } = useQuery<RecipesCookableData>({
-    queryKey: queryKeys.recipes.cookable(),
+const emptyData: RecipesOverviewData = {
+  cookable: { items: [], count: 0 },
+  almostCookable: { items: [], count: 0 },
+  recipes: { items: [], total: 0, page: 1, pageSize: 30, totalPages: 1 },
+}
+
+export function useRecipes(page: number) {
+  const { data, isLoading, error } = useQuery<RecipesOverviewData>({
+    queryKey: queryKeys.recipes.overview(page),
     queryFn: async () => {
-      const dto = await fetchCookableRecipes()
-      return mapCookableRecipesResponse(dto)
+      const dto = await fetchRecipesOverview(page)
+      return mapRecipesOverviewResponse(dto)
     },
   })
 
   return {
-    data: data ?? { cookable: { items: [], count: 0 }, almostCookable: { items: [], count: 0 } },
+    data: data ?? emptyData,
     isLoading,
     error: error?.message ?? null,
   }

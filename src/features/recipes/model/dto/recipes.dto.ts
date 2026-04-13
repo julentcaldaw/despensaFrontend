@@ -41,6 +41,8 @@ export interface RecipeSummaryDTO {
   like?: boolean
   author: RecipeAuthorDTO | null
   ingredientsCount?: number
+  pantryIngredientsCount?: number
+  shoppingListIngredientsCount?: number
   ingredients: RecipeRequirementDTO[]
 }
 
@@ -53,14 +55,38 @@ export interface RecipesCookableBucketDTO {
   count: number
 }
 
+export interface RecipesOverviewPageDTO {
+  items: RecipeSummaryDTO[]
+  total: number
+  page: number
+  pageSize: number
+  totalPages: number
+}
+
 export interface RecipesCookableDataDTO {
   cookable: RecipesCookableBucketDTO
   almostCookable: RecipesCookableBucketDTO
 }
 
+export interface RecipesOverviewDataDTO {
+  cookable: RecipeSummaryDTO[]
+  almostCookable: RecipeSummaryDTO[]
+  recipes: RecipesOverviewPageDTO
+}
+
 export interface RecipesCookableResponseDTO {
   ok: boolean
   data: RecipesCookableDataDTO
+}
+
+export interface RecipesOverviewResponseDTO {
+  ok: boolean
+  data: RecipesOverviewDataDTO
+}
+
+export interface RecipesExplorerResponseDTO {
+  ok: boolean
+  data: RecipeSummaryDTO[] | { items: RecipeSummaryDTO[] }
 }
 
 export interface RecipeDetailResponseDTO {

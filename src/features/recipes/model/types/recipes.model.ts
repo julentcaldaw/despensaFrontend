@@ -22,6 +22,8 @@ export interface RecipeSummary {
   authorName: string
   authorAvatar: string | null
   ingredientsCount: number
+  pantryIngredientsCount: number
+  shoppingListIngredientsCount: number
   ingredients: RecipeRequirement[]
   createdAt: Date | null
   updatedAt: Date | null
@@ -32,7 +34,21 @@ export interface RecipesCookableSection {
   count: number
 }
 
+export interface RecipesPaginatedSection {
+  items: RecipeSummary[]
+  total: number
+  page: number
+  pageSize: number
+  totalPages: number
+}
+
 export interface RecipesCookableData {
   cookable: RecipesCookableSection
   almostCookable: RecipesCookableSection
+}
+
+export interface RecipesOverviewData {
+  cookable: RecipesCookableSection
+  almostCookable: RecipesCookableSection
+  recipes: RecipesPaginatedSection
 }
