@@ -2,18 +2,20 @@ import { MissingIngredientsChips } from './MissingIngredientsChips'
 import type { RecipeRequirement } from '../../features/recipes/model/types/recipes.model'
 
 interface RecipeDetailSidebarProps {
-  recipeId: number
   missingRequirements: RecipeRequirement[]
+  addingIngredientIds?: number[]
   addableMissingCount: number
   isAddingMissingToShoppingList: boolean
+  onAddIngredientToShoppingList: (requirement: RecipeRequirement) => Promise<void>
   onAddMissingToShoppingList: () => Promise<void>
 }
 
 export function RecipeDetailSidebar({
-  recipeId,
   missingRequirements,
+  addingIngredientIds,
   addableMissingCount,
   isAddingMissingToShoppingList,
+  onAddIngredientToShoppingList,
   onAddMissingToShoppingList,
 }: RecipeDetailSidebarProps) {
   return (
@@ -26,7 +28,11 @@ export function RecipeDetailSidebar({
 
         <div className="mt-4">
           {missingRequirements.length > 0 ? (
-            <MissingIngredientsChips recipeId={recipeId} requirements={missingRequirements} />
+            <MissingIngredientsChips
+              requirements={missingRequirements}
+              addingIngredientIds={addingIngredientIds}
+              onAddToShoppingList={onAddIngredientToShoppingList}
+            />
           ) : (
             <p className="text-sm text-success">Ya tienes todo lo necesario para esta receta.</p>
           )}
