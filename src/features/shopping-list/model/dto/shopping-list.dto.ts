@@ -50,6 +50,13 @@ export interface UpdateShoppingItemRequest {
   checked?: boolean
 }
 
+export interface CreateOrderRequest {
+  shopId: number
+  price: number
+  date: string
+  shopItems: number[]
+}
+
 export interface ShoppingItemsEnvelopeResponse {
   ok?: boolean
   data: ShoppingListItemDTO[]

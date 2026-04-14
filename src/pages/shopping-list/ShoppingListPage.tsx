@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from 'react'
-import { Check, Pencil, Plus, ShoppingCart, Tag, Trash2, X } from 'lucide-react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { Camera, Check, ImagePlus, Pencil, Plus, ShoppingCart, Tag, Trash2, X } from 'lucide-react'
 import { DynamicIcon, iconNames, type IconName } from 'lucide-react/dynamic'
 import { searchIngredients, type IngredientSearchResult } from '../../features/pantry/api/pantry.api'
 import {
@@ -28,6 +28,370 @@ interface AddShoppingItemModalProps {
   isSubmitting: boolean
   onClose: () => void
   onSubmit: (input: { ingredientId: number; quantity: number; unit: PantryItemUnit }) => Promise<void>
+}
+
+interface CompletePurchaseModalProps {
+  isOpen: boolean
+  shops: ShopOption[]
+  selectedCount: number
+  isSubmitting: boolean
+  onClose: () => void
+  onConfirm: (shopId: number, totalPaidEur: number, imageFile?: File | null) => Promise<void>
+}
+
+function CompletePurchaseModal({
+  isOpen,
+  shops,
+  selectedCount,
+  isSubmitting,
+  onClose,
+  onConfirm,
+}: CompletePurchaseModalProps) {
+  const galleryInputRef = useRef<HTMLInputElement | null>(null)
+  const cameraInputRef = useRef<HTMLInputElement | null>(null)
+  const videoRef = useRef<HTMLVideoElement | null>(null)
+  const streamRef = useRef<MediaStream | null>(null)
+  const [shopId, setShopId] = useState<number | null>(null)
+  const [totalPaidInput, setTotalPaidInput] = useState('')
+  const [imageFile, setImageFile] = useState<File | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [cameraError, setCameraError] = useState<string | null>(null)
+  const [isCameraOpen, setIsCameraOpen] = useState(false)
+
+  const imagePreviewUrl = useMemo(() => {
+    if (!imageFile) {
+      return null
+    }
+
+    return URL.createObjectURL(imageFile)
+  }, [imageFile])
+
+  function stopCameraStream() {
+    if (!streamRef.current) {
+      return
+    }
+
+    streamRef.current.getTracks().forEach((track) => track.stop())
+    streamRef.current = null
+
+    if (videoRef.current) {
+      videoRef.current.srcObject = null
+    }
+  }
+
+  useEffect(() => {
+    return () => {
+      stopCameraStream()
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!imagePreviewUrl) {
+      return
+    }
+
+    return () => {
+      URL.revokeObjectURL(imagePreviewUrl)
+    }
+  }, [imagePreviewUrl])
+
+  useEffect(() => {
+    let isCancelled = false
+
+    async function startCamera() {
+      if (!isCameraOpen) {
+        stopCameraStream()
+        return
+      }
+
+      if (!navigator.mediaDevices?.getUserMedia) {
+        setCameraError('La cámara no está disponible en este navegador.')
+        cameraInputRef.current?.click()
+        setIsCameraOpen(false)
+        return
+      }
+
+      stopCameraStream()
+      setCameraError(null)
+
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { ideal: 'environment' } },
+          audio: false,
+        })
+
+        if (isCancelled) {
+          stream.getTracks().forEach((track) => track.stop())
+          return
+        }
+
+        streamRef.current = stream
+
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream
+          void videoRef.current.play().catch(() => {
+            setCameraError('No se pudo iniciar la previsualización de la cámara.')
+          })
+        }
+      } catch {
+        setCameraError('No se pudo acceder a la cámara del dispositivo.')
+        setIsCameraOpen(false)
+      }
+    }
+
+    void startCamera()
+
+    return () => {
+      isCancelled = true
+      stopCameraStream()
+    }
+  }, [isCameraOpen])
+
+  async function handleCapturePhoto() {
+    if (!videoRef.current) {
+      return
+    }
+
+    const video = videoRef.current
+    const width = video.videoWidth
+    const height = video.videoHeight
+
+    if (!width || !height) {
+      setCameraError('La cámara todavía no está lista para capturar.')
+      return
+    }
+
+    const canvas = document.createElement('canvas')
+    canvas.width = width
+    canvas.height = height
+
+    const context = canvas.getContext('2d')
+    if (!context) {
+      setCameraError('No se pudo procesar la imagen capturada.')
+      return
+    }
+
+    context.drawImage(video, 0, 0, width, height)
+
+    const blob = await new Promise<Blob | null>((resolve) => {
+      canvas.toBlob(resolve, 'image/jpeg', 0.92)
+    })
+
+    if (!blob) {
+      setCameraError('No se pudo generar la imagen capturada.')
+      return
+    }
+
+    setImageFile(new File([blob], `ticket-${Date.now()}.jpg`, { type: 'image/jpeg' }))
+    setCameraError(null)
+    setIsCameraOpen(false)
+  }
+
+  if (!isOpen) {
+    return null
+  }
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+
+    if (shopId === null) {
+      setError('Selecciona una tienda para completar la compra')
+      return
+    }
+
+    const parsedTotalPaid = Number(totalPaidInput.replace(',', '.'))
+    if (!Number.isFinite(parsedTotalPaid) || parsedTotalPaid <= 0) {
+      setError('Introduce el precio pagado en euros (mayor que 0)')
+      return
+    }
+
+    setError(null)
+
+    try {
+      await onConfirm(shopId, parsedTotalPaid, imageFile)
+      onClose()
+    } catch {
+      // El feedback principal lo maneja el hook.
+    }
+  }
+
+  return (
+    <dialog className="modal modal-open">
+      <form
+        className="modal-box h-dvh max-h-dvh w-full max-w-full rounded-none sm:h-auto sm:max-h-[90vh] sm:max-w-md sm:rounded-box"
+        onSubmit={handleSubmit}
+        noValidate
+      >
+        <div className="mb-4 flex items-start justify-between gap-3">
+          <div>
+            <h3 className="text-lg font-bold">Completar compra</h3>
+            <p className="mt-1 text-sm text-base-content/70">
+              Vas a crear una compra con {selectedCount} ingrediente{selectedCount === 1 ? '' : 's'} seleccionados.
+            </p>
+          </div>
+          <button type="button" className="btn btn-ghost btn-sm btn-circle" onClick={onClose}>
+            <X size={16} />
+          </button>
+        </div>
+
+        <ShopSelect
+          id="complete-purchase-shop"
+          label="Tienda"
+          shops={shops}
+          value={shopId}
+          onChange={(nextShopId) => {
+            setShopId(nextShopId)
+            setError(null)
+          }}
+        />
+
+        <div className="mt-3">
+          <label htmlFor="complete-purchase-total-paid" className="label pb-1">
+            <span className="label-text">Precio</span>
+          </label>
+          <input
+            id="complete-purchase-total-paid"
+            type="number"
+            min="0.01"
+            step="0.01"
+            className="input input-bordered w-full"
+            placeholder="0.00"
+            value={totalPaidInput}
+            onChange={(event) => {
+              setTotalPaidInput(event.target.value)
+              setError(null)
+            }}
+          />
+        </div>
+
+        <div className="mt-4 space-y-3">
+          <p className="text-sm font-medium text-base-content">Imagen del ticket</p>
+
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              className="btn btn-outline btn-sm"
+              onClick={() => {
+                setCameraError(null)
+                setIsCameraOpen(false)
+                galleryInputRef.current?.click()
+              }}
+            >
+              <ImagePlus size={14} /> Cargar imagen
+            </button>
+            <button
+              type="button"
+              className="btn btn-outline btn-sm"
+              onClick={() => {
+                setCameraError(null)
+
+                if (navigator.mediaDevices?.getUserMedia) {
+                  setIsCameraOpen(true)
+                  return
+                }
+
+                cameraInputRef.current?.click()
+              }}
+            >
+              <Camera size={14} /> Usar cámara
+            </button>
+            {isCameraOpen ? (
+              <button
+                type="button"
+                className="btn btn-ghost btn-sm"
+                onClick={() => setIsCameraOpen(false)}
+              >
+                Cerrar cámara
+              </button>
+            ) : null}
+            {imageFile ? (
+              <button
+                type="button"
+                className="btn btn-ghost btn-sm"
+                onClick={() => {
+                  setImageFile(null)
+                  setCameraError(null)
+                }}
+              >
+                Quitar imagen
+              </button>
+            ) : null}
+          </div>
+
+          {isCameraOpen ? (
+            <div className="space-y-3 rounded-box border border-base-300 bg-base-200/40 p-3">
+              <video
+                ref={videoRef}
+                autoPlay
+                playsInline
+                muted
+                className="aspect-[4/3] w-full rounded-box bg-black object-cover"
+              />
+              <div className="flex justify-end">
+                <button type="button" className="btn btn-primary btn-sm" onClick={() => void handleCapturePhoto()}>
+                  Capturar foto
+                </button>
+              </div>
+            </div>
+          ) : null}
+
+          {imagePreviewUrl && !isCameraOpen ? (
+            <div className="rounded-box border border-base-300 bg-base-200/40 p-3">
+              <img
+                src={imagePreviewUrl}
+                alt="Vista previa del ticket seleccionado"
+                className="max-h-64 w-full rounded-box object-contain"
+              />
+            </div>
+          ) : null}
+
+          <input
+            ref={galleryInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(event) => {
+              setImageFile(event.target.files?.[0] ?? null)
+              setCameraError(null)
+            }}
+          />
+
+          <input
+            ref={cameraInputRef}
+            type="file"
+            accept="image/*"
+            capture="environment"
+            className="hidden"
+            onChange={(event) => {
+              setImageFile(event.target.files?.[0] ?? null)
+              setCameraError(null)
+            }}
+          />
+
+          {cameraError ? <p className="text-xs text-warning">{cameraError}</p> : null}
+
+          <p className="text-xs text-base-content/60">
+            {imageFile ? `Seleccionada: ${imageFile.name}` : 'Puedes adjuntar una imagen del ticket desde el dispositivo o la cámara.'}
+          </p>
+        </div>
+
+        {error ? <p className="mt-3 text-sm text-error">{error}</p> : null}
+
+        <div className="modal-action">
+          <button type="button" className="btn btn-ghost" onClick={onClose} disabled={isSubmitting}>
+            Cancelar
+          </button>
+          <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
+            {isSubmitting ? 'Completando...' : 'Completar compra'}
+          </button>
+        </div>
+      </form>
+
+      <form method="dialog" className="modal-backdrop" onClick={onClose}>
+        <button type="button" />
+      </form>
+    </dialog>
+  )
 }
 
 function AddShoppingItemModal({
@@ -546,10 +910,12 @@ export function ShoppingListPage() {
     handleEditItem,
     handleToggleStatus,
     handleDeleteItem,
+    handleCompletePurchase,
   } = useShoppingList()
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [selectedItemToEdit, setSelectedItemToEdit] = useState<ShoppingListItem | null>(null)
+  const [isCompletePurchaseModalOpen, setIsCompletePurchaseModalOpen] = useState(false)
   const [shops, setShops] = useState<ShopOption[]>([])
   const [groupByShop, setGroupByShop] = useState(false)
   const [groupByCategory, setGroupByCategory] = useState(false)
@@ -557,6 +923,10 @@ export function ShoppingListPage() {
   const activeGrouping = useMemo(
     () => getGroupingFromToggles(groupByShop, groupByCategory),
     [groupByShop, groupByCategory],
+  )
+  const completedItems = useMemo(
+    () => groupedItems.flatMap((group) => group.items).filter((item) => item.status === 'completed'),
+    [groupedItems],
   )
 
   useEffect(() => {
@@ -602,14 +972,24 @@ export function ShoppingListPage() {
         <section className="rounded-box border border-base-300 bg-base-100 p-5">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h1 className="text-2xl font-semibold text-base-content">Lista de la compra</h1>
-            <button
-              type="button"
-              className="btn btn-primary btn-sm"
-              onClick={() => setIsAddModalOpen(true)}
-            >
-              <Plus size={14} />
-              Añadir producto
-            </button>
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                className="btn btn-success btn-sm"
+                disabled={completedItems.length === 0 || isSubmitting}
+                onClick={() => setIsCompletePurchaseModalOpen(true)}
+              >
+                Completar compra
+              </button>
+              <button
+                type="button"
+                className="btn btn-primary btn-sm"
+                onClick={() => setIsAddModalOpen(true)}
+              >
+                <Plus size={14} />
+                Añadir producto
+              </button>
+            </div>
           </div>
         </section>
 
@@ -667,6 +1047,19 @@ export function ShoppingListPage() {
           await handleEditItem(selectedItemToEdit.id, input)
         }}
       />
+
+      {isCompletePurchaseModalOpen ? (
+        <CompletePurchaseModal
+          isOpen={isCompletePurchaseModalOpen}
+          shops={shops}
+          selectedCount={completedItems.length}
+          isSubmitting={isSubmitting}
+          onClose={() => setIsCompletePurchaseModalOpen(false)}
+          onConfirm={async (shopId, totalPaidEur, imageFile) => {
+            await handleCompletePurchase(completedItems, shopId, totalPaidEur, imageFile)
+          }}
+        />
+      ) : null}
 
       {toast ? (
         <AppToast

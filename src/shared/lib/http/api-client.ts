@@ -40,9 +40,11 @@ function buildHeaders(
   init?: RequestInit,
   options?: ApiClientRequestOptions,
 ): Record<string, string> {
+  const providedHeaders = (init?.headers as Record<string, string> | undefined) ?? {}
+  const isFormDataBody = typeof FormData !== 'undefined' && init?.body instanceof FormData
   const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-    ...(init?.headers as Record<string, string> | undefined),
+    ...(isFormDataBody ? {} : { 'Content-Type': 'application/json' }),
+    ...providedHeaders,
   }
 
   if (!options?.skipAuth && authHandlers) {
@@ -116,6 +118,15 @@ async function request<TResponse>(
     )
   }
 
+  if (response.status === 204) {
+    return undefined as TResponse
+  }
+
+  const contentType = response.headers.get('content-type') ?? ''
+  if (!contentType.includes('application/json')) {
+    return undefined as TResponse
+  }
+
   return (await response.json()) as TResponse
 }
 
@@ -134,6 +145,21 @@ export const apiClient = {
       {
         method: 'POST',
         body: JSON.stringify(body),
+      },
+      options,
+    )
+  },
+
+  postFormData<TResponse>(
+    path: string,
+    body: FormData,
+    options?: ApiClientRequestOptions,
+  ): Promise<TResponse> {
+    return request<TResponse>(
+      path,
+      {
+        method: 'POST',
+        body,
       },
       options,
     )

@@ -43,7 +43,11 @@ export function ShopSelect({
 
   useEffect(() => {
     function handlePointerDown(event: MouseEvent) {
-      if (!rootRef.current?.contains(event.target as Node)) {
+      const targetNode = event.target as Node
+      const clickedInsideTrigger = rootRef.current?.contains(targetNode)
+      const clickedInsideDropdown = dropdownRef.current?.contains(targetNode)
+
+      if (!clickedInsideTrigger && !clickedInsideDropdown) {
         setIsOpen(false)
       }
     }

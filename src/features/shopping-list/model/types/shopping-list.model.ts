@@ -34,3 +34,11 @@ export interface UpdateShoppingItemInput {
   status?: ShoppingItemStatus
   shopId?: number | null
 }
+
+export interface CreateOrderInput {
+  shopId: number
+  price: number
+  date: string
+  shopItems: number[]
+  imageFile?: File | null
+}

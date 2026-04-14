@@ -8,6 +8,7 @@ import type {
   UpdateShoppingItemRequest,
 } from '../model/dto/shopping-list.dto'
 import type {
+  CreateOrderInput,
   CreateShoppingItemInput,
   UpdateShoppingItemInput,
 } from '../model/types/shopping-list.model'
@@ -123,4 +124,20 @@ export async function updateShoppingItem(
 
 export async function deleteShoppingItem(itemId: string): Promise<void> {
   await apiClient.delete<unknown>(`${ENDPOINT}/${itemId}`)
+}
+
+export async function createOrder(input: CreateOrderInput): Promise<void> {
+  const formData = new FormData()
+  formData.append('shopId', String(input.shopId))
+  formData.append('price', String(input.price))
+  formData.append('date', input.date)
+  input.shopItems.forEach((itemId) => {
+    formData.append('shopItems[]', String(itemId))
+  })
+
+  if (input.imageFile) {
+    formData.append('image', input.imageFile)
+  }
+
+  await apiClient.postFormData<unknown>('/orders', formData)
 }

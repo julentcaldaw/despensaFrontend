@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
+  createOrder,
   createShoppingItem,
   deleteShoppingItem,
   fetchShoppingItems,
@@ -8,6 +9,7 @@ import {
 } from '../../api/shopping-list.api'
 import { mapShoppingItemsResponse } from '../mappers/shopping-list.mapper'
 import type {
+  CreateOrderInput,
   CreateShoppingItemInput,
   ShoppingListGrouping,
   ShoppingListItem,
@@ -43,6 +45,12 @@ interface UseShoppingListResult {
   ) => Promise<void>
   handleToggleStatus: (item: ShoppingListItem) => Promise<void>
   handleDeleteItem: (itemId: string) => Promise<void>
+  handleCompletePurchase: (
+    items: ShoppingListItem[],
+    shopId: number,
+    totalPaidEur: number,
+    imageFile?: File | null,
+  ) => Promise<void>
 }
 
 function sortByStatusAndName(items: ShoppingListItem[]): ShoppingListItem[] {
@@ -190,11 +198,20 @@ export function useShoppingList(): UseShoppingListResult {
     },
   })
 
+  const createOrderMutation = useMutation({
+    mutationFn: createOrder,
+    onError: (error) => {
+      const message = error instanceof Error ? error.message : 'No se pudo crear el pedido'
+      setToast({ type: 'warning', message })
+    },
+  })
+
   const isSubmitting =
     createMutation.isPending ||
     toggleStatusMutation.isPending ||
     updateMutation.isPending ||
-    deleteMutation.isPending
+    deleteMutation.isPending ||
+    createOrderMutation.isPending
 
   async function handleAddManualItem(input: CreateShoppingItemInput): Promise<void> {
     await createMutation.mutateAsync(input)
@@ -220,6 +237,43 @@ export function useShoppingList(): UseShoppingListResult {
     await deleteMutation.mutateAsync(itemId)
   }
 
+  async function handleCompletePurchase(
+    itemsToComplete: ShoppingListItem[],
+    shopId: number,
+    totalPaidEur: number,
+    imageFile?: File | null,
+  ): Promise<void> {
+    if (itemsToComplete.length === 0) {
+      return
+    }
+
+    const shopItems = itemsToComplete
+      .map((item) => Number(item.id))
+      .filter((itemId) => Number.isFinite(itemId) && itemId > 0)
+
+    if (shopItems.length === 0) {
+      setToast({ type: 'warning', message: 'No hay productos válidos para crear el pedido.' })
+      return
+    }
+
+    const orderInput: CreateOrderInput = {
+      shopId,
+      price: totalPaidEur,
+      date: new Date().toISOString(),
+      shopItems,
+      imageFile,
+    }
+
+    await createOrderMutation.mutateAsync(orderInput)
+
+    setToast({
+      type: 'success',
+      message: `Pedido creado con ${shopItems.length} ingredientes. Importe: ${totalPaidEur.toFixed(2)} €`,
+    })
+
+    await queryClient.invalidateQueries({ queryKey: queryKeys.shoppingList.items() })
+  }
+
   return {
     items: sortedItems,
     isLoading,
@@ -233,5 +287,6 @@ export function useShoppingList(): UseShoppingListResult {
     handleEditItem,
     handleToggleStatus,
     handleDeleteItem,
+    handleCompletePurchase,
   }
 }
