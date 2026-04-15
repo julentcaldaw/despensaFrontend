@@ -818,12 +818,8 @@ function ShoppingListItems({
                       <Tag size={100} strokeWidth={1.6} />
                     )}
                   </div>
-                  <div className="relative z-10 flex flex-col gap-3">
-                    <button
-                      type="button"
-                      className="flex w-full items-center gap-3 text-left"
-                      onClick={() => void onToggleStatus(item)}
-                    >
+                  <div className="relative z-10 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                    <div className="flex w-full items-center gap-3 text-left cursor-pointer" onClick={() => void onToggleStatus(item)} role="button" tabIndex={0} onKeyPress={e => { if (e.key === 'Enter' || e.key === ' ') { onToggleStatus(item) } }}>
                       <span className="flex w-7 shrink-0 items-center justify-center">
                         <span
                           className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border ${
@@ -850,41 +846,36 @@ function ShoppingListItems({
                         </span>
                       </span>
 
-                      <span className="flex shrink-0 flex-col items-start justify-center gap-1">
-                        <span
-                          className="max-w-[140px] truncate text-xs text-base-content/60"
-                          title={item.shopName ?? 'Sin tienda'}
-                        >
-                          {item.shopName ?? 'Sin tienda'}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <button
-                            type="button"
-                            className="btn btn-circle btn-sm btn-outline btn-warning"
-                            onClick={(event) => {
-                              event.stopPropagation()
-                              onEdit(item)
-                            }}
-                            title="Editar"
-                            aria-label="Editar"
-                          >
-                            <Pencil size={14} strokeWidth={2} />
-                          </button>
-                          <button
-                            type="button"
-                            className="btn btn-circle btn-sm btn-outline btn-error"
-                            onClick={(event) => {
-                              event.stopPropagation()
-                              void onDelete(item.id)
-                            }}
-                            title="Eliminar"
-                            aria-label="Eliminar"
-                          >
-                            <Trash2 size={14} strokeWidth={2} />
-                          </button>
-                        </span>
+                      <span className="max-w-[140px] truncate text-xs text-base-content/60 ml-2" title={item.shopName ?? 'Sin tienda'}>
+                        {item.shopName ?? 'Sin tienda'}
                       </span>
-                    </button>
+                    </div>
+                    <div className="flex items-center gap-1 mt-2 md:mt-0">
+                      <button
+                        type="button"
+                        className="btn btn-circle btn-sm btn-outline btn-warning"
+                        onClick={event => {
+                          event.stopPropagation()
+                          onEdit(item)
+                        }}
+                        title="Editar"
+                        aria-label="Editar"
+                      >
+                        <Pencil size={14} strokeWidth={2} />
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-circle btn-sm btn-outline btn-error"
+                        onClick={event => {
+                          event.stopPropagation()
+                          void onDelete(item.id)
+                        }}
+                        title="Eliminar"
+                        aria-label="Eliminar"
+                      >
+                        <Trash2 size={14} strokeWidth={2} />
+                      </button>
+                    </div>
                   </div>
                 </li>
                 )

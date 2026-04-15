@@ -168,30 +168,17 @@ export function PantryItemCard({
           </span>
 
           <div className="card-actions justify-end gap-2">
-            {item.status !== 'consumed' && (
-              <>
-                <div className="tooltip tooltip-top" data-tip="Consumir">
-                  <button
-                    className="btn btn-circle btn-sm btn-outline btn-success"
-                    onClick={() => onConsume(item.id)}
-                    title="Marcar como consumido"
-                    aria-label="Marcar como consumido"
-                  >
-                    <Check size={16} strokeWidth={2.2} />
-                  </button>
-                </div>
-                <div className="tooltip tooltip-top" data-tip="Editar">
-                  <button
-                    className="btn btn-circle btn-sm btn-outline btn-warning"
-                    onClick={() => onEdit(item)}
-                    title="Editar"
-                    aria-label="Editar"
-                  >
-                    <Pencil size={16} strokeWidth={2} />
-                  </button>
-                </div>
-              </>
-            )}
+            {/* Botón de consumir eliminado */}
+            <div className="tooltip tooltip-top" data-tip="Editar">
+              <button
+                className="btn btn-circle btn-sm btn-outline btn-warning"
+                onClick={() => onEdit(item)}
+                title="Editar"
+                aria-label="Editar"
+              >
+                <Pencil size={16} strokeWidth={2} />
+              </button>
+            </div>
             <div className="tooltip tooltip-top" data-tip="Eliminar">
               <button
                 className="btn btn-circle btn-sm btn-outline btn-error"

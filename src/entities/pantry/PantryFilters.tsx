@@ -32,7 +32,6 @@ export function PantryFilters({
           <option value="all">Todos los estados</option>
           <option value="in_stock">En stock</option>
           <option value="low_stock">Bajo stock</option>
-          <option value="consumed">Consumidos</option>
         </select>
       </div>
 
