@@ -1,21 +1,45 @@
-// Tipos para órdenes de compra
-export type Order = {
-  id: string;
-  userId: string;
-  createdAt: string;
-  items: OrderItem[];
-  total: number;
-  shop?: { id: number; name: string };
-  shopName?: string;
+export type OrderUser = {
+  id: string
+  email: string
+  username: string
+  avatar: string
+}
+
+export type OrderShop = {
+  id: number
+  name: string
 }
 
 export type OrderItem = {
-  productId: string;
-  name: string;
-  quantity: number;
-  price: number;
+  id: string
+  productId: string
+  ingredientId: number
+  orderId: string
+  shopId: number | null
+  quantity: number
+  unit: string
+  checked: boolean
+  name: string
+  categoryName: string | null
+  categoryIcon: string | null
+  shopName: string | null
+}
+
+export type Order = {
+  id: string
+  userId: string
+  shopId: number | null
+  date: string
+  createdAt: string
+  updatedAt: string
+  total: number
+  ticket: string | null
+  items: OrderItem[]
+  shop?: OrderShop
+  shopName?: string
+  user?: OrderUser
 }
 
 export type OrdersListResponse = {
-  data: Order[];
+  data: Order[]
 }

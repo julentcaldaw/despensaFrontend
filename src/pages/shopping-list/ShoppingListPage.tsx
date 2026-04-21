@@ -285,7 +285,7 @@ function CompletePurchaseModal({
               onClick={() => {
                 setCameraError(null)
 
-                if (navigator.mediaDevices?.getUserMedia) {
+                if (navigator.mediaDevices) {
                   setIsCameraOpen(true)
                   return
                 }

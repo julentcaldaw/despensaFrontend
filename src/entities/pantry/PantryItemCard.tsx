@@ -3,7 +3,7 @@
  * Displays a single pantry item with actions
  */
 
-import { Archive, Check, Pencil, Refrigerator, Snowflake, Tag, Trash2 } from 'lucide-react'
+import { Archive, Pencil, Refrigerator, Snowflake, Tag, Trash2 } from 'lucide-react'
 import { DynamicIcon, iconNames, type IconName } from 'lucide-react/dynamic'
 import type {
   PantryItem,
@@ -118,7 +118,7 @@ function renderConservationIcon(
 export function PantryItemCard({
   item,
   onEdit,
-  onConsume,
+  onConsume: _onConsume,
   onDelete,
 }: PantryItemCardProps) {
   const statusStyle = getStatusBadgeStyle(item.status)

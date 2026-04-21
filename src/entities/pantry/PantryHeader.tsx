@@ -4,7 +4,6 @@
  */
 
 import { Plus, Search } from 'lucide-react'
-import { useState } from 'react'
 
 interface PantryHeaderProps {
   itemCount: number

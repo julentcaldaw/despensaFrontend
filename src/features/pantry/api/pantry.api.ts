@@ -20,23 +20,6 @@ export interface IngredientSearchResult {
   name: string
 }
 
-function extractItemsFromResponse(payload: unknown): PantryItemDTO[] {
-  if (Array.isArray(payload)) {
-    return payload as PantryItemDTO[]
-  }
-
-  if (
-    payload &&
-    typeof payload === 'object' &&
-    'data' in payload &&
-    Array.isArray((payload as PantryItemsEnvelopeResponse).data)
-  ) {
-    return (payload as PantryItemsEnvelopeResponse).data
-  }
-
-  return []
-}
-
 function extractItemFromResponse(payload: unknown): PantryItemDTO {
   if (payload && typeof payload === 'object' && 'ingredientId' in payload) {
     return payload as PantryItemDTO

@@ -1,4 +1,4 @@
-import { Menu, QrCode, Settings, User, LogOut } from 'lucide-react'
+import { Menu, ScanBarcode, Settings, User, LogOut } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
@@ -154,7 +154,7 @@ export function ProtectedAppShell({ children }: ProtectedAppShellProps) {
           <div className="navbar-end gap-2">
             {/* Botón 'Añadir' eliminado de la navbar-end */}
             <button type="button" className="btn btn-sm btn-outline" onClick={handleQuickScan}>
-              <QrCode size={16} />
+              <ScanBarcode size={16} />
               <span className="hidden sm:inline">Escanear</span>
             </button>
           </div>

@@ -1,33 +1,51 @@
-import { useQuery } from '@tanstack/react-query';
-import { apiClient } from '../../../shared/lib/http/api-client';
+import { useQuery } from '@tanstack/react-query'
+import { apiClient } from '../../../shared/lib/http/api-client'
 
+type FavoriteRecipe = {
+  like?: boolean
+  liked?: boolean
+  [key: string]: unknown
+}
+
+type FavoriteRecipesEnvelope = {
+  data: FavoriteRecipe[]
+  [key: string]: unknown
+}
+
+function isFavoriteRecipeArray(value: unknown): value is FavoriteRecipe[] {
+  return Array.isArray(value)
+}
+
+function isFavoriteRecipesEnvelope(value: unknown): value is FavoriteRecipesEnvelope {
+  return value !== null && typeof value === 'object' && 'data' in value && Array.isArray((value as { data?: unknown }).data)
+}
 
 export async function fetchFavoriteRecipes() {
-  // apiClient.get añade el token automáticamente
-  const data = await apiClient.get('/recipes/favorites');
-  // Si la respuesta es un array, mapear 'like' a 'liked'
-  if (Array.isArray(data)) {
+  const data = await apiClient.get<unknown>('/recipes/favorites')
+
+  if (isFavoriteRecipeArray(data)) {
     return data.map((recipe) => ({
       ...recipe,
       liked: recipe.like ?? false,
-    }));
+    }))
   }
-  // Si la respuesta es { ok, data }, mapear dentro de data
-  if (data && Array.isArray(data.data)) {
+
+  if (isFavoriteRecipesEnvelope(data)) {
     return {
       ...data,
       data: data.data.map((recipe) => ({
         ...recipe,
         liked: recipe.like ?? false,
       })),
-    };
+    }
   }
-  return data;
+
+  return data
 }
 
 export function useFavoriteRecipes() {
   return useQuery({
     queryKey: ['recipes', 'favorites'],
     queryFn: fetchFavoriteRecipes,
-  });
+  })
 }
