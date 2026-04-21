@@ -5,6 +5,8 @@ export type Order = {
   createdAt: string;
   items: OrderItem[];
   total: number;
+  shop?: { id: number; name: string };
+  shopName?: string;
 }
 
 export type OrderItem = {

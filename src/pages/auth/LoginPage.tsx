@@ -52,7 +52,7 @@ export function LoginPage() {
       setSession(session)
       setFeedback({
         type: 'success',
-        message: `Bienvenido de nuevo, ${session.user.displayName}.`,
+        message: `Bienvenido de nuevo, ${session.user.username}.`,
       })
       window.setTimeout(() => {
         navigate('/pantry', { replace: true })

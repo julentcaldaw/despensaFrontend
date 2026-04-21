@@ -23,7 +23,8 @@ export function PurchaseHistoryPage() {
               {orders.map(order => (
                 <li key={order.id} className="border border-base-200 rounded-lg p-4 bg-base-200">
                   <div className="flex justify-between items-center mb-2">
-                    <span className="font-semibold">Pedido #{order.id.slice(-6)}</span>
+                    <span className="font-semibold">
+                      Pedido en {order.shop?.name || (typeof order.shop === 'string' ? order.shop : '') || 'Tienda desconocida'}                    </span>
                     <span className="text-sm text-base-content/60">{new Date(order.createdAt).toLocaleDateString()}</span>
                   </div>
                   <ul className="text-sm text-base-content/80 mb-2">
@@ -34,7 +35,7 @@ export function PurchaseHistoryPage() {
                       </li>
                     ))}
                   </ul>
-                  <div className="text-right font-bold text-base-content">Total: ${order.total.toFixed(2)}</div>
+                  <div className="text-right font-bold text-base-content">Total: {order.total.toFixed(2)}€</div>
                 </li>
               ))}
             </ul>

@@ -13,7 +13,6 @@ export interface UpdateUserProfileResponse {
   user: AuthUser;
 }
 
-// PATCH /api/users/profile
 export async function updateUserProfile(payload: UpdateUserProfilePayload): Promise<AuthUser> {
   const response = await apiClient.patch<
     UpdateUserProfilePayload,
