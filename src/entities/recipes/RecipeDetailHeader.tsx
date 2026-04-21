@@ -121,7 +121,7 @@ export function RecipeDetailHeader({
               onError={() => onImageError(recipe.image)}
             />
           ) : (
-            <div className="flex h-full w-full flex-col items-center justify-center gap-2 bg-gradient-to-br from-base-200 via-base-100 to-base-300/60 text-base-content/60">
+            <div className="flex h-full w-full flex-col items-center justify-center gap-2 bg-gradient-to-br from-base-200 via-base-100 to-base-300/60 text-base-content/60 text-center">
               <ImageOff size={22} />
               <p className="text-xs font-medium">Sin imagen disponible</p>
             </div>
