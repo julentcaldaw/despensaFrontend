@@ -86,8 +86,12 @@ function extractIngredientsFromResponse(payload: unknown): IngredientSearchResul
  * Fetch all pantry items for the authenticated user
  */
 export async function fetchPantryItems(): Promise<PantryItemDTO[]> {
-  const response = await apiClient.get<unknown>(ENDPOINT)
-  return extractItemsFromResponse(response)
+  const response = await apiClient.get<PantryItemsEnvelopeResponse | PantryItemDTO[]>(ENDPOINT)
+  if (Array.isArray(response)) return response
+  if (response && Array.isArray((response as PantryItemsEnvelopeResponse).data)) {
+    return (response as PantryItemsEnvelopeResponse).data
+  }
+  return []
 }
 
 export async function searchIngredients(query: string): Promise<IngredientSearchResult[]> {

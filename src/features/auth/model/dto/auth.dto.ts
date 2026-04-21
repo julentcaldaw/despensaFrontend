@@ -31,7 +31,7 @@ export interface LoginRequestDto {
 export interface RegisterRequestDto {
   email: string
   password: string
-  displayName: string
+  username: string
 }
 
 export type LoginResponseDto = AuthSessionDto

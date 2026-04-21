@@ -52,6 +52,7 @@ function mapRequirements(requirements: RecipeSummaryDTO['ingredients']): RecipeR
     unit: requirement.unit,
     inStock: requirement.inStock,
     inShoppingList: Boolean(requirement.inShoppingList),
+    categoryIcon: requirement.ingredient?.category?.icon ?? null,
   }))
 }
 

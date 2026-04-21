@@ -1,0 +1,6 @@
+.profile-btn-yellow:hover,
+.profile-btn-yellow:focus {
+  background-color: #ffe066 !important; /* amarillo pastel más oscuro */
+  color: var(--color-warning-content) !important;
+  border-color: #ffd43b !important; /* amarillo pastel aún más oscuro */
+}

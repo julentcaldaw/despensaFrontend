@@ -1,4 +1,4 @@
-import { Menu, Plus, QrCode, Settings, User, LogOut } from 'lucide-react'
+import { Menu, QrCode, Settings, User, LogOut } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
@@ -43,10 +43,6 @@ export function ProtectedAppShell({ children }: ProtectedAppShellProps) {
     }
   }
 
-  function handleQuickAdd() {
-    navigate('/pantry')
-  }
-
   function handleQuickScan() {
     setIsScanModalOpen(true)
   }
@@ -85,10 +81,10 @@ export function ProtectedAppShell({ children }: ProtectedAppShellProps) {
               <div className="menu dropdown-content z-[70] mt-3 w-72 rounded-box border border-base-300 bg-base-100 p-3 shadow">
                 <div className="mb-3 border-b border-base-200 pb-3">
                   <p className="text-sm font-semibold text-base-content">
-                    {session?.user.displayName ?? 'Usuario'}
+                    {session?.user?.username ?? 'Usuario'}
                   </p>
-                  <p className="text-xs text-base-content/60">{session?.user.email ?? ''}</p>
-                  <p className="text-xs text-base-content/60">Rol: {session?.user.role ?? 'user'}</p>
+                  <p className="text-xs text-base-content/60">{session?.user?.email ?? ''}</p>
+                  <p className="text-xs text-base-content/60">Rol: {session?.user?.role ?? 'user'}</p>
                 </div>
 
                 <ul className="mb-3 space-y-1">
@@ -107,7 +103,14 @@ export function ProtectedAppShell({ children }: ProtectedAppShellProps) {
 
                 <ul className="space-y-1 border-t border-base-200 pt-3">
                   <li>
-                    <button type="button" className="justify-start" onClick={() => setIsMenuOpen(false)}>
+                    <button
+                      type="button"
+                      className="justify-start"
+                      onClick={() => {
+                        setIsMenuOpen(false)
+                        window.location.assign('/profile')
+                      }}
+                    >
                       <User size={16} /> Perfil
                     </button>
                   </li>
@@ -149,10 +152,7 @@ export function ProtectedAppShell({ children }: ProtectedAppShellProps) {
           </nav>
 
           <div className="navbar-end gap-2">
-            <button type="button" className="btn btn-sm btn-primary" onClick={handleQuickAdd}>
-              <Plus size={16} />
-              <span className="hidden sm:inline">Añadir</span>
-            </button>
+            {/* Botón 'Añadir' eliminado de la navbar-end */}
             <button type="button" className="btn btn-sm btn-outline" onClick={handleQuickScan}>
               <QrCode size={16} />
               <span className="hidden sm:inline">Escanear</span>

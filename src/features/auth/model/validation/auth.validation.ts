@@ -26,11 +26,12 @@ export function validateLoginForm(values: LoginFormModel): AuthFormErrors {
   return errors
 }
 
+
 export function validateRegisterForm(values: RegisterFormModel): AuthFormErrors {
   const errors: AuthFormErrors = {}
 
-  if (!values.displayName.trim()) {
-    errors.displayName = 'El nombre visible es obligatorio.'
+  if (!values.username.trim()) {
+    errors.username = 'El nombre de usuario es obligatorio.'
   }
 
   if (!values.email.trim()) {

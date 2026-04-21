@@ -8,6 +8,7 @@ export interface RecipeRequirement {
   unit: string | null
   inStock: boolean
   inShoppingList: boolean
+  categoryIcon: string | null
 }
 
 export interface RecipeSummary {

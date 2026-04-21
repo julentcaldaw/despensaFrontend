@@ -29,7 +29,7 @@ function mapAuthUserDtoToModel(dto: AuthUserDto): AuthUser {
   return {
     id: String(dto.id),
     email: dto.email,
-    displayName: dto.displayName ?? dto.username ?? dto.email,
+    username: dto.username ?? dto.displayName ?? dto.email,
     role: mapRoleDtoToModel(dto.role),
     avatar: dto.avatar,
     createdAt: toOptionalDate(dto.createdAt),

@@ -11,7 +11,7 @@ import { AppToast } from '../../shared/ui/feedback/AppToast'
 import { TextField } from '../../shared/ui/form/TextField'
 
 const initialValues: RegisterFormModel = {
-  displayName: '',
+  username: '',
   email: '',
   password: '',
   confirmPassword: '',
@@ -31,7 +31,7 @@ export function RegisterPage() {
   const isDisabled = useMemo(
     () =>
       isSubmitting ||
-      !values.displayName ||
+      !values.username ||
       !values.email ||
       !values.password ||
       !values.confirmPassword,
@@ -89,14 +89,14 @@ export function RegisterPage() {
           <h2 className="text-2xl font-semibold text-base-content">Registro</h2>
 
         <TextField
-          id="register-name"
-          label="Nombre visible"
+          id="register-username"
+          label="Nombre de usuario"
           type="text"
-          autoComplete="name"
-          value={values.displayName}
-          onChange={(event) => onChange('displayName', event.target.value)}
-          error={errors.displayName}
-          placeholder="Tu nombre"
+          autoComplete="username"
+          value={values.username}
+          onChange={(event) => onChange('username', event.target.value)}
+          error={errors.username}
+          placeholder="Tu nombre de usuario"
           required
         />
         <TextField

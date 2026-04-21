@@ -1,3 +1,4 @@
+
 import { env } from '../../config/env'
 import type { ApiErrorResponse } from '../../types/api.types'
 
@@ -192,6 +193,21 @@ export const apiClient = {
       path,
       {
         method: 'PATCH',
+        body: JSON.stringify(body),
+      },
+      options,
+    )
+  },
+
+  put<TRequest, TResponse>(
+    path: string,
+    body: TRequest,
+    options?: ApiClientRequestOptions,
+  ): Promise<TResponse> {
+    return request<TResponse>(
+      path,
+      {
+        method: 'PUT',
         body: JSON.stringify(body),
       },
       options,

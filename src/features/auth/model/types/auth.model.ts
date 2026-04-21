@@ -3,7 +3,7 @@ export type UserRole = 'user' | 'contributor' | 'admin'
 export interface AuthUser {
   id: string
   email: string
-  displayName: string
+  username: string
   role: UserRole
   avatar?: string
   createdAt?: Date
@@ -22,7 +22,7 @@ export interface LoginFormModel {
 }
 
 export interface RegisterFormModel {
-  displayName: string
+  username: string
   email: string
   password: string
   confirmPassword: string

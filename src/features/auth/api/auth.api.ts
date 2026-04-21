@@ -31,7 +31,7 @@ export async function register(
   payload: RegisterFormModel,
 ): Promise<AuthSession> {
   const request: RegisterRequestDto = {
-    displayName: payload.displayName.trim(),
+    username: payload.username.trim(),
     email: payload.email.trim().toLowerCase(),
     password: payload.password,
   }
