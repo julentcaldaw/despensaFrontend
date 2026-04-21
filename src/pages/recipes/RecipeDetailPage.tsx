@@ -72,7 +72,10 @@ export function RecipeDetailPage() {
       return { createdCount, createdIds, total: requirements.length }
     },
     onSuccess: async ({ createdCount, createdIds, total }) => {
-      await queryClient.invalidateQueries({ queryKey: queryKeys.shoppingList.items() })
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: queryKeys.shoppingList.items() }),
+        parsedRecipeId !== null ? queryClient.invalidateQueries({ queryKey: queryKeys.recipes.detail(parsedRecipeId) }) : Promise.resolve(),
+      ])
       setAddedIngredientIds((prev) => Array.from(new Set([...prev, ...createdIds])))
 
       if (total === 1) {
