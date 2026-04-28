@@ -3,22 +3,27 @@ import type { InputHTMLAttributes } from 'react'
 interface TextFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string
   error?: string
+  hideLabel?: boolean
 }
 
 export function TextField({
   id,
   label,
   error,
+  hideLabel = false,
   className,
   ...props
 }: TextFieldProps) {
   return (
     <div className="w-full space-y-2">
-      <label className="label px-0 pb-0" htmlFor={id}>
-        <span className="label-text font-medium text-base-content">{label}</span>
-      </label>
+      {hideLabel ? null : (
+        <label className="label px-0 pb-0" htmlFor={id}>
+          <span className="label-text font-medium text-base-content">{label}</span>
+        </label>
+      )}
       <input
         id={id}
+        aria-label={props['aria-label'] ?? label}
         className={`input input-bordered w-full ${error ? 'input-error' : ''} ${className ?? ''}`.trim()}
         {...props}
       />

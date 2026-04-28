@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { register } from '../../features/auth/api/auth.api'
@@ -28,15 +28,12 @@ export function RegisterPage() {
     message: string
   } | null>(null)
 
-  const isDisabled = useMemo(
-    () =>
-      isSubmitting ||
-      !values.username ||
-      !values.email ||
-      !values.password ||
-      !values.confirmPassword,
-    [isSubmitting, values],
-  )
+  const isDisabled =
+    isSubmitting ||
+    !values.username ||
+    !values.email ||
+    !values.password ||
+    !values.confirmPassword
 
   function onChange(field: keyof RegisterFormModel, value: string) {
     setValues((prev) => ({ ...prev, [field]: value }))
@@ -80,70 +77,77 @@ export function RegisterPage() {
 
   return (
     <AuthLayout
-      eyebrow="Despensa"
-      title="Crear cuenta"
-      subtitle="Empieza a gestionar tu alimentación con una rutina más simple."
+      eyebrow=""
+      title=""
+      subtitle=""
     >
-      <form className="card w-full bg-base-100" onSubmit={onSubmit} noValidate>
-        <div className="card-body gap-4 p-0">
-          <h2 className="text-2xl font-semibold text-base-content">Registro</h2>
+      <form className="mx-auto flex w-full max-w-sm flex-col gap-5" onSubmit={onSubmit} noValidate>
+        <img src="/logoB.png" alt="Despensa" className="mx-auto h-14 w-auto sm:h-16" />
 
-        <TextField
-          id="register-username"
-          label="Nombre de usuario"
-          type="text"
-          autoComplete="username"
-          value={values.username}
-          onChange={(event) => onChange('username', event.target.value)}
-          error={errors.username}
-          placeholder="Tu nombre de usuario"
-          required
-        />
-        <TextField
-          id="register-email"
-          label="Correo electrónico"
-          type="email"
-          autoComplete="email"
-          value={values.email}
-          onChange={(event) => onChange('email', event.target.value)}
-          error={errors.email}
-          placeholder="tu@email.com"
-          required
-        />
-        <TextField
-          id="register-password"
-          label="Contraseña"
-          type="password"
-          autoComplete="new-password"
-          value={values.password}
-          onChange={(event) => onChange('password', event.target.value)}
-          error={errors.password}
-          placeholder="Minimo 8 caracteres"
-          required
-        />
-        <TextField
-          id="register-confirm-password"
-          label="Repite la contraseña"
-          type="password"
-          autoComplete="new-password"
-          value={values.confirmPassword}
-          onChange={(event) => onChange('confirmPassword', event.target.value)}
-          error={errors.confirmPassword}
-          placeholder="********"
-          required
-        />
+        <h1 className="text-center text-3xl font-black tracking-[-0.04em] text-base-content sm:text-4xl">
+          Crear cuenta
+        </h1>
 
-        <button className="btn btn-primary mt-2 w-full" type="submit" disabled={isDisabled}>
+        <div className="grid gap-3">
+          <TextField
+            id="register-username"
+            label="Nombre de usuario"
+            hideLabel
+            type="text"
+            autoComplete="username"
+            value={values.username}
+            onChange={(event) => onChange('username', event.target.value)}
+            error={errors.username}
+            placeholder="Nombre de usuario"
+            required
+          />
+          <TextField
+            id="register-email"
+            label="Correo electrónico"
+            hideLabel
+            type="email"
+            autoComplete="email"
+            value={values.email}
+            onChange={(event) => onChange('email', event.target.value)}
+            error={errors.email}
+            placeholder="Correo electrónico"
+            required
+          />
+          <TextField
+            id="register-password"
+            label="Contraseña"
+            hideLabel
+            type="password"
+            autoComplete="new-password"
+            value={values.password}
+            onChange={(event) => onChange('password', event.target.value)}
+            error={errors.password}
+            placeholder="Contraseña"
+            required
+          />
+          <TextField
+            id="register-confirm-password"
+            label="Repite la contraseña"
+            hideLabel
+            type="password"
+            autoComplete="new-password"
+            value={values.confirmPassword}
+            onChange={(event) => onChange('confirmPassword', event.target.value)}
+            error={errors.confirmPassword}
+            placeholder="Repite la contraseña"
+            required
+          />
+        </div>
+
+        <button className="btn btn-primary h-12 w-full text-base font-semibold" type="submit" disabled={isDisabled}>
           {isSubmitting ? 'Creando cuenta...' : 'Crear cuenta'}
         </button>
 
-          <p className="text-sm text-base-content/70">
-            ¿Ya tienes cuenta?{' '}
-            <Link className="link link-primary" to="/login">
-              Inicia sesión
-            </Link>
-          </p>
-        </div>
+        <p className="text-center text-sm text-base-content/70">
+          <Link className="link link-primary font-semibold" to="/login">
+            Inicia sesión
+          </Link>
+        </p>
       </form>
 
       {feedback ? (

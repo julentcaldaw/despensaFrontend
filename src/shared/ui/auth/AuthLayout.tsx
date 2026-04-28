@@ -7,43 +7,27 @@ interface AuthLayoutProps extends PropsWithChildren {
 }
 
 export function AuthLayout({
-  eyebrow,
   title,
   subtitle,
   children,
 }: AuthLayoutProps) {
   return (
-    <main className="min-h-screen bg-gradient-to-br from-base-200 via-base-100 to-base-300 p-4 sm:p-6">
-      <section className="mx-auto grid min-h-[calc(100vh-2rem)] w-full max-w-5xl grid-cols-1 overflow-hidden rounded-3xl border border-base-300 bg-base-100 shadow-2xl lg:min-h-[640px] lg:grid-cols-[1.05fr_1fr]">
-        <aside className="relative flex flex-col justify-between gap-6 bg-gradient-to-br from-primary/20 via-secondary/10 to-base-100 p-6 sm:p-8">
-          <div className="badge badge-primary badge-outline w-fit">{eyebrow}</div>
-
-          <div className="space-y-4">
-            <h1 className="text-3xl font-bold leading-tight text-base-content sm:text-4xl">
-              {title}
-            </h1>
-            <p className="max-w-md text-base leading-relaxed text-base-content/75">
-              {subtitle}
-            </p>
+    <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(253,199,0,0.26),transparent_34%),linear-gradient(180deg,#fffdf8_0%,#fff8ec_100%)] px-4 py-6 sm:px-6">
+      <section className="mx-auto flex min-h-[calc(100vh-3rem)] w-full max-w-lg items-center justify-center">
+        <div className="w-full rounded-[2rem] border border-warning/20 bg-base-100/92 p-6 shadow-[0_24px_60px_rgba(115,62,10,0.12)] backdrop-blur sm:p-8">
+          <div className="mb-8 space-y-3 text-center">
+            {title ? (
+              <h1 className="text-3xl font-black tracking-[-0.04em] text-base-content sm:text-4xl">
+                {title}
+              </h1>
+            ) : null}
+            {subtitle ? (
+              <p className="text-sm text-base-content/62 sm:text-base">{subtitle}</p>
+            ) : null}
           </div>
 
-          <ul className="space-y-3 text-sm text-base-content/80 sm:text-base">
-            <li className="flex items-start gap-2">
-              <span className="mt-1 inline-block h-2.5 w-2.5 rounded-full bg-primary" />
-              Controla la despensa en un solo lugar.
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="mt-1 inline-block h-2.5 w-2.5 rounded-full bg-secondary" />
-              Descubre recetas según lo que ya tienes.
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="mt-1 inline-block h-2.5 w-2.5 rounded-full bg-success" />
-              Crea la compra con sugerencias inteligentes.
-            </li>
-          </ul>
-        </aside>
-
-        <section className="flex items-center p-4 sm:p-8">{children}</section>
+          {children}
+        </div>
       </section>
     </main>
   )
