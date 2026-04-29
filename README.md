@@ -1,73 +1,79 @@
-# React + TypeScript + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# desPENSA Frontend
 
-Currently, two official plugins are available:
+Aplicación web para la gestión de despensa, lista de la compra y sugerencias de recetas, orientada a usuarios domésticos y familias. Permite escanear productos, controlar el stock, planificar compras y descubrir recetas según los ingredientes disponibles.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Características principales
 
-## React Compiler
+- Gestión de productos en la despensa (alta, baja, edición, caducidad)
+- Escaneo de productos mediante código de barras
+- Generación y gestión de lista de la compra
+- Sugerencias de recetas personalizadas
+- Interfaz adaptada a móvil (Mobile-First)
+- Acceso y comportamiento según rol de usuario
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Stack tecnológico
 
-## Expanding the ESLint configuration
+- **React** + **TypeScript**
+- **Vite** (entorno de desarrollo y build)
+- **Tailwind CSS v4** + **daisyUI** (UI y componentes)
+- **Lucide React** (iconografía)
+- **React Query** (gestión de datos remotos)
+- **React Router** (navegación)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Instalación y uso
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+1. Clona el repositorio:
+   ```bash
+   git clone https://github.com/tu-usuario/despensaFrontend.git
+   cd despensaFrontend
+   ```
+2. Instala las dependencias:
+   ```bash
+   npm install
+   ```
+3. Inicia el servidor de desarrollo:
+   ```bash
+   npm run dev
+   ```
+4. Accede a la app en [http://localhost:5173](http://localhost:5173)
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Scripts útiles
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- `npm run dev` — Inicia el servidor de desarrollo
+- `npm run build` — Genera la build de producción
+- `npm run preview` — Previsualiza la build
+- `npm run lint` — Linting del código
+
+## Estructura de carpetas
+
+```
+src/
+  app/                # App shell y layout
+  assets/             # Imágenes y recursos estáticos
+  entities/           # Componentes de dominio (despensa, recetas...)
+  features/           # Lógica de negocio por dominio
+  pages/              # Páginas principales
+  shared/             # Utilidades, tipos y UI compartida
+public/               # Archivos estáticos
+docs/                 # Documentación y convenciones
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Estilo y accesibilidad
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- Diseño Mobile-First y centrado en el usuario
+- Paleta de colores fresca y limpia (ver docs/ui/design-system.md)
+- Tipografía sans-serif (Inter, Roboto)
+- Iconos vectoriales consistentes (Lucide)
+- Accesibilidad: áreas táctiles grandes, contraste AA, feedback inmediato
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## Créditos y referencias
+
+- [Tailwind CSS](https://tailwindcss.com/)
+- [daisyUI](https://daisyui.com/)
+- [Lucide React](https://lucide.dev/)
+- [React Query](https://tanstack.com/query/latest)
+- [React Router](https://reactrouter.com/)
+
+---
+Para más detalles sobre arquitectura y convenciones, consulta la carpeta `docs/`.
